@@ -1,16 +1,19 @@
 package aws
 
 import (
-	"github.com/asoorm/serverless/provider"
+	"fmt"
+	"github.com/TykTechnologies/serverless/provider"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/external"
 	"github.com/aws/aws-sdk-go-v2/service/lambda"
 	"github.com/pkg/errors"
+	"reflect"
 )
 
-type Conf aws.Config
+type AWSConf aws.Config
 
 func init() {
+	fmt.Println("registering AWS lambda")
 	provider.RegisterProvider("aws-lambda", NewProvider)
 }
 
@@ -24,9 +27,9 @@ type Provider struct {
 
 func (p *Provider) Init(conf provider.Conf) error {
 
-	c, ok := conf.(Conf)
+	c, ok := conf.(*AWSConf)
 	if !ok {
-		return errors.New("unable to resolve conf type")
+		return fmt.Errorf("unable to resolve conf type: %v", reflect.TypeOf(conf))
 	}
 
 	p.Region = c.Region
@@ -36,7 +39,10 @@ func (p *Provider) Init(conf provider.Conf) error {
 		return errors.Wrap(err, provider.ErrorLoadingDriverConfig)
 	}
 
+	awsCfg.Region = c.Region
 	p.Config = awsCfg
+
+	fmt.Println(awsCfg.Region)
 
 	return nil
 }
@@ -83,7 +89,7 @@ func (p Provider) Invoke(function provider.Function, requestBody []byte) (*provi
 		//InvocationType: lambda.InvocationTypeEvent, // To make async
 		LogType:   lambda.LogTypeTail,
 		Payload:   requestBody,
-		Qualifier: aws.String(function.GetName()),
+		Qualifier: aws.String(function.GetVersion()),
 	}
 
 	request := service.InvokeRequest(&input)

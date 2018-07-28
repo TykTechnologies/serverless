@@ -1,7 +1,7 @@
 package template
 
 import (
-	"github.com/asoorm/serverless/provider"
+	"github.com/TykTechnologies/serverless/provider"
 )
 
 func init() {

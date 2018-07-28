@@ -1,7 +1,7 @@
 package azure
 
 import (
-	"github.com/asoorm/serverless/provider"
+	"github.com/TykTechnologies/serverless/provider"
 	"github.com/kataras/go-errors"
 )
 

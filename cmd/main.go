@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/asoorm/serverless/provider"
-	"github.com/asoorm/serverless/provider/aws"
-	_ "github.com/asoorm/serverless/provider/azure"
+	"github.com/TykTechnologies/serverless/provider"
+	"github.com/TykTechnologies/serverless/provider/aws"
+	_ "github.com/TykTechnologies/serverless/provider/azure"
 )
 
 func main() {
@@ -15,8 +15,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	conf := aws.Conf{
-		Region: "eu-west-2",
+	conf := &aws.AWSConf{
+		Region: "us-east-1",
 	}
 
 	if err := lambda.Init(conf); err != nil {
@@ -28,5 +28,15 @@ func main() {
 		log.Fatal(err)
 	}
 
+	f := provider.Function{
+		Name: "helloWorld",
+	}
+
+	resp, err := lambda.Invoke(f, []byte{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	log.Printf("%+v\n", detail)
+	log.Println(resp)
 }
